@@ -1,6 +1,5 @@
 package com.sysco.starwars.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sysco.starwars.data.model.Planet
@@ -11,6 +10,7 @@ import com.sysco.starwars.util.ApiErrorState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,18 +40,15 @@ class MainViewModel @Inject constructor(
 
             starWarsRepository.getPlanetList().onSuccess { response ->
                 val planetList = response.planetList.map { it.fields.toPlanet() }
-                _viewState.value = ViewState.Success(planetList)
 
-                planetList.forEachIndexed { index, planet ->
-                    viewModelScope.launch {
+                val planetsWithImages = planetList.map { planet ->
+                    async {
                         val imageUrl = starWarsRepository.getPicsumImage().getOrNull()
-                        if (imageUrl != null) {
-                            planet.imageUrl = imageUrl
-                            updatePlanetImage(index, imageUrl)
-                        }
+                        planet.copy(imageUrl = imageUrl.orEmpty())
                     }
-                }
+                }.awaitAll()
 
+                _viewState.value = ViewState.Success(planetsWithImages)
                 nextPageUrl = response.nextPageUrl
                 currentPage++
             }.onFailure { error ->
@@ -61,49 +58,38 @@ class MainViewModel @Inject constructor(
     }
 
     fun loadNextPage() {
-        nextPageUrl?.let { url ->
-            if (!_isLoading.value) {
-                _isLoading.value = true
-
-                viewModelScope.launch(Dispatchers.IO) {
-                    starWarsRepository.getPlanetPage(url).onSuccess { response ->
-                        val newPlanets = response.planetList.map { it.fields.toPlanet() }
-
-                        val currentPlanets = (_viewState.value as? ViewState.Success)?.planetList.orEmpty()
-                        val combined = currentPlanets + newPlanets
-                        _viewState.value = ViewState.Success(combined)
-
-                        newPlanets.forEachIndexed { index, planet ->
-                            viewModelScope.launch {
-                                val imageUrl = starWarsRepository.getPicsumImage().getOrNull()
-                                if (imageUrl != null) {
-                                    planet.imageUrl = imageUrl
-                                    updatePlanetImage(currentPlanets.size + index, imageUrl)
-                                }
-                            }
-                        }
-
-                        nextPageUrl = response.nextPageUrl
-                    }.onFailure { error ->
-                        errorHandler(error)
-                        _viewState.value = ViewState.Error(error.message ?: "Unknown error")
-                    }
-
-                    _isLoading.value = false
-                }
-            }
-        } ?: run {
-            _viewState.value = ViewState.Error("No more pages available.")
+        if (_isLoading.value || nextPageUrl == null) {
+            return
         }
-    }
 
-    private fun updatePlanetImage(index: Int, imageUrl: String) {
-        val current = _viewState.value
-        if (current is ViewState.Success) {
-            val updated = current.planetList.toMutableList()
-            val planet = updated[index].copy(imageUrl = imageUrl)
-            updated[index] = planet
-            _viewState.value = ViewState.Success(updated)
+        _isLoading.value = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = nextPageUrl!!
+
+            val result = starWarsRepository.getPlanetPage(url)
+
+            result.onSuccess { response ->
+                val newPlanets = response.planetList.map { it.fields.toPlanet() }
+
+                val updatedPlanets = newPlanets.map { planet ->
+                    async {
+                        val imageUrl = starWarsRepository.getPicsumImage().getOrNull()
+                        planet.copy(imageUrl = imageUrl.orEmpty())
+                    }
+                }.awaitAll()
+
+                val currentPlanets = (_viewState.value as? ViewState.Success)?.planetList.orEmpty()
+                val combined = currentPlanets + updatedPlanets
+                if(combined != currentPlanets) {
+                    _viewState.value = ViewState.Success(combined)
+                }
+                nextPageUrl = response.nextPageUrl
+            }.onFailure { error ->
+                errorHandler(error)
+                _viewState.value = ViewState.Error(error.message ?: "Unknown error")
+            }
+            _isLoading.value = false
         }
     }
 
@@ -122,6 +108,7 @@ class MainViewModel @Inject constructor(
             is ApiErrorState -> {
                 ViewState.Error(error.message ?: "")
             }
+
             else -> {
                 ViewState.Error("Unknown error occurred")
             }

@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Star wars</string>
+    <string name="star_wars_climate_label">Climate: %1$s</string>
+    <string name="star_wars_rotation_label">Rotation: %1$s</string>
+    <string name="star_wars_na">N/A</string>
 </resources>

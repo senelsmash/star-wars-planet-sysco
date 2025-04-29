@@ -19,27 +19,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.sysco.starwars.data.model.Planet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParallaxDetailScreen(
+fun DetailScreen(
     planet: Planet,
     onBack: () -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val imageHeight = 300.dp
     val imageHeightPx = with(LocalDensity.current) { imageHeight.toPx() }
-    val description = buildString {
-        append("Welcome to the planetary profile of ${planet.name ?: "an unidentified celestial body"}.\n\n")
-        append("This planet is known for its unique climate characteristics. With a general climate described as ${planet.climate ?: "unknown"}, the environmental conditions are shaped by its atmospheric composition, solar distance, and axial tilt. Such climate often influences not only the ecosystem but also the potential habitability and geological features of the planet.\n\n")
-        append("The orbital period of this planet is approximately ${planet.orbitalPeriod ?: "an undetermined number of"} days. This means it takes that long to complete a full revolution around its star, which can significantly affect seasonal cycles and solar exposure. Depending on its axial tilt, residents—if any—may experience long days and nights or relatively balanced daylight hours.\n\n")
-        append("In terms of rotation, the planet spins on its axis every ${planet.rotationPeriod ?: "unknown"} hours. A short rotation period typically results in more dynamic weather patterns due to faster atmospheric movement, while longer rotations could mean prolonged periods of daylight and darkness.\n\n")
-        append("The surface gravity of the planet is estimated to be ${planet.gravity ?: "not recorded"}, which plays a crucial role in determining the physical characteristics of its terrain, water behavior, and even the physiology of any life forms that may exist there. For reference, Earth's gravity is considered '1 standard'.\n\n")
-        append("Altogether, ${planet.name ?: "this planet"} stands out as a remarkable body in the known galaxy, with intriguing conditions worth deeper exploration. Scientists and explorers alike would find its climate and gravitational profile particularly fascinating for theoretical modeling, colonization possibilities, or even tourism in the far future.\n\n")
-        append("Stay tuned for more interstellar data as we continue charting the stars and uncovering the secrets of distant worlds.")
+    //dummy content
+    val description: AnnotatedString = buildAnnotatedString {
+        val boldStyle = SpanStyle(fontWeight = FontWeight.Bold)
+
+        append("Welcome to the detailed planetary dossier of ")
+        withStyle(boldStyle) { append(planet.name ?: "an unidentified celestial body") }
+        append(".\n\n")
+
+        append("This fascinating planet exhibits a distinct and noteworthy climate profile. With a general atmospheric condition described as ")
+        withStyle(boldStyle) { append(planet.climate ?: "undocumented") }
+        append(", scientists believe that such a climate is shaped by a complex interplay of factors.\n\n")
+
+        append("The orbital period of this celestial body is approximately ")
+        withStyle(boldStyle) { append(planet.orbitalPeriod ?: "an unknown number of") }
+        append(" days. This governs the length of a planetary year.\n\n")
+
+        append("When it comes to daily cycles, the planet completes one full rotation on its axis every ")
+        withStyle(boldStyle) { append(planet.rotationPeriod ?: "undetermined number of") }
+        append(" hours, influencing atmospheric dynamics and temperature distribution.\n\n")
+
+        append("Gravity on the surface is measured at ")
+        withStyle(boldStyle) { append(planet.gravity ?: "an unverified value") }
+        append(", affecting everything from fluid behavior to potential biological evolution.\n\n")
+
+        append("Altogether, ")
+        withStyle(boldStyle) { append(planet.name ?: "this planet") }
+        append(" stands as a fascinating subject for deeper scientific exploration and theoretical modeling.")
     }
 
     Scaffold(

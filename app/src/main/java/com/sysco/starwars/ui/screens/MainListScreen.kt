@@ -1,21 +1,30 @@
 package com.sysco.starwars.ui.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import com.sysco.starwars.R
 import com.sysco.starwars.data.model.Planet
 import com.sysco.starwars.ui.ViewState
 import com.sysco.starwars.ui.components.CommonErrorMessage
@@ -25,7 +34,6 @@ import com.sysco.starwars.ui.components.loading.LoadMoreLogicImpl
 import com.sysco.starwars.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainListScreen(
     viewModel: MainViewModel = hiltViewModel(),
@@ -56,7 +64,10 @@ fun MainListScreen(
                 )
             }
             if (currentPlanet != null) {
-                ParallaxDetailScreen(
+                BackHandler {
+                    viewModel.onItemDetailsDismissed()
+                }
+                DetailScreen(
                     currentPlanet!!,
                     viewModel::onItemDetailsDismissed
                 )
@@ -129,13 +140,20 @@ fun PlanetItem(
         elevation = 8.dp
     ) {
         Box {
-            AsyncImage(
-                model = planet.imageUrl,
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(planet.imageUrl)
+                        .crossfade(true)
+                        .size(300)
+                        .build()
+                ),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .height(200.dp)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Gray),
+                contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
@@ -144,21 +162,27 @@ fun PlanetItem(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = planet.name ?: "N/A",
+                    text = planet.name
+                        ?: stringResource(R.string.star_wars_na),
                     style = MaterialTheme.typography.h6,
                     color = Color.White,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Climate: ${planet.climate ?: "N/A"}",
+                    text = stringResource(R.string.star_wars_climate_label, planet.climate
+                        ?: stringResource(R.string.star_wars_na)),
                     style = MaterialTheme.typography.body2,
                     color = Color.White,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Rotation: ${planet.rotationPeriod ?: "N/A"}",
+                    text = stringResource(
+                        R.string.star_wars_rotation_label,
+                        planet.rotationPeriod
+                            ?: stringResource(R.string.star_wars_na)
+                    ),
                     style = MaterialTheme.typography.body2,
                     color = Color.White,
                     modifier = Modifier.fillMaxWidth()
