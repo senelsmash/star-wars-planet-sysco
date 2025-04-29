@@ -26,7 +26,27 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+        }
     }
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("dev") {
+            dimension "environment"
+            buildConfigField("String", "BASE_URL_STARWARS", "\"https://swapi-node.vercel.app/api/\"")
+            buildConfigField("String", "BASE_URL_PICSUM", "\"https://picsum.photos/\"")
+            buildConfigField ("int", "DATABASE_VERSION", "1")
+        }
+        create("prod") {
+            dimension "environment"
+            buildConfigField("String", "BASE_URL_STARWARS", "\"https://swapi.dev/\"")
+            buildConfigField("String", "BASE_URL_PICSUM", "\"https://picsum.photos/\"")
+            buildConfigField ("int", "DATABASE_VERSION", "1")
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -69,4 +89,9 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.44"
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
     implementation "androidx.compose.material3:material3:1.0.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.core:core-splashscreen:1.0.1"
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 }
