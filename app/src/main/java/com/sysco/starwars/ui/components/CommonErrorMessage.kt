@@ -8,6 +8,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun CommonErrorMessage(
@@ -21,11 +22,14 @@ fun CommonErrorMessage(
     ) {
         Text(
             text = message,
-            textAlign = TextAlign.Center
-        )
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text("Retry",
+                color = Color.White,
+            )
         }
     }
 }

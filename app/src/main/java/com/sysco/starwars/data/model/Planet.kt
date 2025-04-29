@@ -1,6 +1,12 @@
 package com.sysco.starwars.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "planets")
 data class Planet (
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val name: String?,
     val climate: String?,
     val orbitalPeriod: String?,
