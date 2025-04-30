@@ -1,35 +1,19 @@
-package com.sysco.starwars.data.remote
+package com.sysco.starwars.data.remote.datasource
 
 import android.util.Log
-import com.sysco.starwars.data.database.StarWarsLocalDataSourceImpl
 import com.sysco.starwars.data.model.response.PlanetResponse
+import com.sysco.starwars.data.remote.PicsumApi
+import com.sysco.starwars.data.remote.StarWarsApi
 import com.sysco.starwars.util.ApiErrorState
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.lang.Exception
 import javax.inject.Inject
 
-interface StarWarsApiDataSource {
-
-    suspend fun getPlanetList(): PlanetResponse
-
-    suspend fun getPlanetPage(pageUrl: String): PlanetResponse
-
-    suspend fun getPicsumImage(): String
-
-}
-
-
-class StarWarsApiDataSourceImpl @Inject constructor(
+class StarWarsApiDatasourceImpl @Inject constructor(
     private val starWarsApi: StarWarsApi,
     private val picsumApi: PicsumApi
-) : StarWarsApiDataSource {
-    private val TAG: String = StarWarsLocalDataSourceImpl::class.java.simpleName
+) : StarWarsApiDatasource {
+    private val TAG: String = StarWarsApiDatasourceImpl::class.java.simpleName
 
     override suspend fun getPlanetList(): PlanetResponse {
         try {
@@ -63,7 +47,7 @@ class StarWarsApiDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getPicsumImage(): String {
-         try {
+        try {
             val response = picsumApi.getRedirectUrl()
             if (response.code() == 200) {
                 val imageUrl = response.raw().request.url.toUrl().toString()
@@ -76,7 +60,4 @@ class StarWarsApiDataSourceImpl @Inject constructor(
             throw ApiErrorState.from(e)
         }
     }
-
-
-
 }

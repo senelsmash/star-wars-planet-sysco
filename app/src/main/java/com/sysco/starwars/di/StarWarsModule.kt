@@ -5,12 +5,12 @@ import android.util.Log
 import androidx.room.Room
 import com.sysco.starwars.BuildConfig
 import com.sysco.starwars.data.database.StarWarsDatabase
-import com.sysco.starwars.data.database.StarWarsLocalDataSourceImpl
-import com.sysco.starwars.data.database.StarWarsLocalDatasource
+import com.sysco.starwars.data.database.datasource.StarWarsLocalDataSourceImpl
+import com.sysco.starwars.data.database.datasource.StarWarsLocalDatasource
 import com.sysco.starwars.data.remote.PicsumApi
 import com.sysco.starwars.data.remote.StarWarsApi
-import com.sysco.starwars.data.remote.StarWarsApiDataSource
-import com.sysco.starwars.data.remote.StarWarsApiDataSourceImpl
+import com.sysco.starwars.data.remote.datasource.StarWarsApiDatasource
+import com.sysco.starwars.data.remote.datasource.StarWarsApiDatasourceImpl
 import com.sysco.starwars.data.repository.StarWarsRepository
 import com.sysco.starwars.data.repository.StarWarsRepositoryImpl
 import com.sysco.starwars.viewmodel.MainViewModel
@@ -55,8 +55,8 @@ object StarWarsModule {
 
     @Provides
     @Singleton
-    fun provideStarWarsApiDataSource(starWarsApiDataSourceImpl: StarWarsApiDataSourceImpl):
-            StarWarsApiDataSource = starWarsApiDataSourceImpl
+    fun provideStarWarsApiDataSource(starWarsApiDataSourceImpl: StarWarsApiDatasourceImpl):
+            StarWarsApiDatasource = starWarsApiDataSourceImpl
 
     @Provides
     @Singleton

@@ -1,4 +1,4 @@
-package com.sysco.starwars.data.model
+package com.sysco.starwars.data.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

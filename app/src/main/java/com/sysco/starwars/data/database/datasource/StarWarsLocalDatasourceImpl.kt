@@ -1,15 +1,11 @@
-package com.sysco.starwars.data.database
+package com.sysco.starwars.data.database.datasource
 
 import android.util.Log
-import com.sysco.starwars.data.model.Planet
+import com.sysco.starwars.data.database.StarWarsDao
+import com.sysco.starwars.data.model.entity.Planet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
-interface StarWarsLocalDatasource {
-    suspend fun addPlanetList(planetList: List<Planet>)
-    suspend fun getPlanetList(): List<Planet>
-}
 
 class StarWarsLocalDataSourceImpl @Inject constructor(
     private val starWarsDao: StarWarsDao

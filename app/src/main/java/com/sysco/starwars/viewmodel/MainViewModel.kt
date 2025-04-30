@@ -2,7 +2,7 @@ package com.sysco.starwars.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sysco.starwars.data.model.Planet
+import com.sysco.starwars.data.model.entity.Planet
 import com.sysco.starwars.data.repository.StarWarsRepository
 import com.sysco.starwars.data.repository.StarWarsRepositoryImpl.Companion.toPlanet
 import com.sysco.starwars.ui.ViewState
@@ -59,6 +59,7 @@ class MainViewModel @Inject constructor(
 
     fun loadNextPage() {
         if (_isLoading.value || nextPageUrl == null) {
+            //if already loading or next page is not available stop execution
             return
         }
 
