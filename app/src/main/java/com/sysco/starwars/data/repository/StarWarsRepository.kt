@@ -1,12 +1,11 @@
 package com.sysco.starwars.data.repository
 
-import android.util.Log
-import com.sysco.starwars.data.database.StarWarsLocalDatasource
-import com.sysco.starwars.data.model.Planet
+import com.sysco.starwars.data.database.datasource.StarWarsLocalDatasource
+import com.sysco.starwars.data.model.entity.Planet
 import com.sysco.starwars.data.model.response.PlanetData
 import com.sysco.starwars.data.model.response.PlanetResponse
 import com.sysco.starwars.data.model.response.PlanetWrapper
-import com.sysco.starwars.data.remote.StarWarsApiDataSource
+import com.sysco.starwars.data.remote.datasource.StarWarsApiDatasource
 import com.sysco.starwars.util.ApiErrorState
 import javax.inject.Inject
 
@@ -20,7 +19,7 @@ interface StarWarsRepository {
 }
 
 class StarWarsRepositoryImpl @Inject constructor(
-    private val apiDataSource : StarWarsApiDataSource,
+    private val apiDataSource : StarWarsApiDatasource,
     private val dbDataSource : StarWarsLocalDatasource
 ) : StarWarsRepository {
 

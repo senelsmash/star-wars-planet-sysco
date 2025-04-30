@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.sysco.starwars.data.model.Planet
+import com.sysco.starwars.data.model.entity.Planet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
